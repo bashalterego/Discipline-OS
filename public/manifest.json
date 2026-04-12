@@ -1,0 +1,9 @@
+{
+    "name": "DisciplineOS",
+    "short_name": "DisciplineOS",
+    "description": "A personalized discipline and productivity operating system.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0E0E10",
+    "theme_color": "#0E0E10"
+}
