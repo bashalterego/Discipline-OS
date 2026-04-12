@@ -1,6 +1,5 @@
 'use client';
 
-import { DURATIONS } from '@/types';
 
 interface StepCommitmentProps {
     commitment: { title: string; durationDays: 30 | 60 | 90 } | null;

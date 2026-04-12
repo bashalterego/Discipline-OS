@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { Achievement } from '@/types';
 import Confetti from 'react-confetti';
@@ -23,14 +23,14 @@ export default function CelebrationOverlay({ achievement, onDismiss }: Celebrati
 
     if (!achievement) return null;
 
-    const containerVariants = {
+    const containerVariants: Variants = {
         hidden: { opacity: 0, scale: 0.8, y: 40 },
         visible: {
             opacity: 1,
             scale: 1,
             y: 0,
             transition: {
-                type: 'spring',
+                type: 'spring' as const,
                 damping: 25,
                 stiffness: 300,
                 staggerChildren: 0.1,
@@ -45,7 +45,7 @@ export default function CelebrationOverlay({ achievement, onDismiss }: Celebrati
         }
     };
 
-    const itemVariants = {
+    const itemVariants: Variants = {
         hidden: { opacity: 0, y: 10 },
         visible: { opacity: 1, y: 0 }
     };
