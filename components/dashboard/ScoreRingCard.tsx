@@ -12,6 +12,8 @@ interface ScoreRingCardProps {
     isRestDay: boolean;
     archetype?: string | null;
     difficultyTier?: string | null;
+    freezeTokens?: number;
+    onFreeze?: () => void;
 }
 
 export default memo(function ScoreRingCard({
@@ -19,11 +21,13 @@ export default memo(function ScoreRingCard({
     tier,
     isRestDay,
     archetype,
-    difficultyTier
+    difficultyTier,
+    freezeTokens,
+    onFreeze
 }: ScoreRingCardProps) {
     return (
         <Card style={{ padding: '32px', textAlign: 'center', position: 'relative' }}>
-            {isRestDay && (
+            {isRestDay ? (
                 <div style={{
                     position: 'absolute',
                     top: '12px',
@@ -32,6 +36,31 @@ export default memo(function ScoreRingCard({
                 }}>
                     <StatusPill text="RECOVERY" variant="gold" />
                 </div>
+            ) : (
+                freezeTokens && freezeTokens > 0 && (
+                    <button
+                        onClick={onFreeze}
+                        style={{
+                            position: 'absolute',
+                            top: '12px',
+                            right: '12px',
+                            zIndex: 10,
+                            backgroundColor: 'rgba(200, 184, 154, 0.1)',
+                            border: '0.5px solid var(--color-gold)',
+                            borderRadius: '4px',
+                            padding: '4px 8px',
+                            color: 'var(--color-gold)',
+                            fontFamily: 'var(--font-dm-mono)',
+                            fontSize: '10px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(200, 184, 154, 0.2)'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(200, 184, 154, 0.1)'}
+                    >
+                        FREEZE ({freezeTokens})
+                    </button>
+                )
             )}
             <PerformanceRing score={score} tier={tier} />
 

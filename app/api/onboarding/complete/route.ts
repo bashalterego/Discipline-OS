@@ -61,37 +61,38 @@ export async function POST(request: Request) {
             console.error('Checking existing tasks failed:', checkError.message);
         }
 
-        // 2. Only seed if no tasks exist (or delete and re-seed if the user specifically wants a reset)
-        // Here we clear existing tasks to ensure the new onboarding state is reflected
-        await supabase.from('tasks').delete().eq('user_id', user.id);
+        // 2. Only seed if no tasks exist. Skip if they already do.
+        if (existingTasks && existingTasks.length > 0) {
+            console.log('Tasks already exist for user, skipping seeding.');
+        } else {
+            const taskRows = customTasks.map((task: any, idx: number) => ({
+                user_id: user.id,
+                is_core: true,
+                is_active: true,
+                name: task.name,
+                type: task.type,
+                points: task.points,
+                target_value: task.target_value,
+                target_unit: task.target_unit,
+                preferred_time: task.preferred_time,
+                sort_order: idx + 1,
+            }));
 
-        const taskRows = customTasks.map((task: any, idx: number) => ({
-            user_id: user.id,
-            is_core: true,
-            is_active: true,
-            name: task.name,
-            type: task.type,
-            points: task.points,
-            target_value: task.target_value,
-            target_unit: task.target_unit,
-            preferred_time: task.preferred_time,
-            sort_order: idx + 1,
-        }));
-
-        const { error: tasksError } = await supabase.from('tasks').insert(taskRows);
-        if (tasksError) {
-            // Fallback: If preferred_time column is missing, retry without it
-            if (tasksError.message.includes('preferred_time')) {
-                console.warn('Falling back: preferred_time missing in DB');
-                const fallbackRows = taskRows.map(({ preferred_time, ...rest }: any) => rest);
-                const { error: retryError } = await supabase.from('tasks').insert(fallbackRows);
-                if (retryError) {
-                    console.error('Task seeding retry failed:', retryError.message);
-                    return NextResponse.json({ error: retryError.message }, { status: 500 });
+            const { error: tasksError } = await supabase.from('tasks').insert(taskRows);
+            if (tasksError) {
+                // Fallback: If preferred_time column is missing, retry without it
+                if (tasksError.message.includes('preferred_time')) {
+                    console.warn('Falling back: preferred_time missing in DB');
+                    const fallbackRows = taskRows.map(({ preferred_time, ...rest }: any) => rest);
+                    const { error: retryError } = await supabase.from('tasks').insert(fallbackRows);
+                    if (retryError) {
+                        console.error('Task seeding retry failed:', retryError.message);
+                        throw new Error(`Task seeding failed: ${retryError.message}`);
+                    }
+                } else {
+                    console.error('Task seeding failed:', tasksError.message);
+                    throw new Error(`Task seeding failed: ${tasksError.message}`);
                 }
-            } else {
-                console.error('Task seeding failed:', tasksError.message);
-                return NextResponse.json({ error: tasksError.message }, { status: 500 });
             }
         }
 

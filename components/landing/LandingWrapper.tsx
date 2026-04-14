@@ -8,6 +8,7 @@ const HowItWorks = dynamic(() => import('@/components/landing/HowItWorks'), { ss
 const DashboardPreview = dynamic(() => import('@/components/landing/DashboardPreview'), { ssr: false });
 const Achievements = dynamic(() => import('@/components/landing/Achievements'), { ssr: false });
 const Stats = dynamic(() => import('@/components/landing/Stats'), { ssr: false });
+const Testimonials = dynamic(() => import('@/components/landing/Testimonials'), { ssr: false });
 const FinalCTA = dynamic(() => import('@/components/landing/FinalCTA'), { ssr: false });
 
 export default function LandingWrapper() {
@@ -19,6 +20,8 @@ export default function LandingWrapper() {
                 <HowItWorks />
                 <div className="divider-shimmer" />
                 <Achievements />
+                <div className="divider-shimmer" />
+                <Testimonials />
                 <div className="divider-shimmer" />
                 <DashboardPreview />
                 <div className="divider-shimmer" />

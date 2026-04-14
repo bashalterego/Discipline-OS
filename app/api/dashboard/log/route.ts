@@ -69,6 +69,13 @@ export async function POST(request: Request) {
     }
 
     if (type === 'close_log') {
+        const { data: log } = await supabase
+            .from('daily_logs')
+            .select('score')
+            .eq('user_id', user.id)
+            .eq('log_date', today)
+            .single();
+
         const { error } = await supabase
             .from('daily_logs')
             .update({ log_closed: true })
@@ -77,56 +84,84 @@ export async function POST(request: Request) {
 
         if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+        // Award streak freeze if score >= 9.0
+        if (log && log.score >= 9.0) {
+            const { data: userData } = await supabase
+                .from('users')
+                .select('freeze_tokens')
+                .eq('id', user.id)
+                .single();
+
+            if (userData) {
+                await supabase
+                    .from('users')
+                    .update({ freeze_tokens: userData.freeze_tokens + 1 })
+                    .eq('id', user.id);
+            }
+        }
+
         // Generate AI reflection in background (non-blocking)
+        // ... (keeping existing AI logic)
         (async () => {
             try {
-                const { data: userProfile } = await supabase.from('users').select('full_name').eq('id', user.id).single();
-                const { data: todayLog } = await supabase.from('daily_logs').select('*').eq('user_id', user.id).eq('log_date', today).single();
-                const { data: financeLog } = await supabase.from('finance_logs').select('*').eq('user_id', user.id).eq('log_date', today).single();
-                const { data: streak } = await supabase.from('streaks').select('current_streak').eq('user_id', user.id).single();
+                const protocol = request.url.startsWith('https') ? 'https' : 'http';
+                const host = request.headers.get('host');
+                const baseUrl = `${protocol}://${host}`;
 
-                // Last 7 days scores
-                const sevenDaysAgo = new Date();
-                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-                const { data: history } = await supabase
-                    .from('daily_logs').select('score').eq('user_id', user.id)
-                    .gte('log_date', sevenDaysAgo.toISOString().split('T')[0])
-                    .order('log_date', { ascending: true });
-
-                const { data: completions } = await supabase
-                    .from('task_completions').select('*').eq('user_id', user.id).eq('log_date', today);
-
-                const selfControlAvg = completions && completions.length > 0
-                    ? completions.reduce((s: number, c: any) => s + (c.self_control_score ?? 0), 0) / completions.length
-                    : 0;
-
-                const context = {
-                    userName: userProfile?.full_name || 'Operator',
-                    todayScore: todayLog?.score ?? 0,
-                    tasksCompleted: todayLog?.tasks_done ?? 0,
-                    tasksTotal: todayLog?.tasks_total ?? 0,
-                    selfControlScore: Math.round(selfControlAvg),
-                    financeLog: { cashInHand: financeLog?.cash_in_hand ?? 0, earning: financeLog?.earning ?? 0, expenditure: financeLog?.expenditure ?? 0 },
-                    userReflection: todayLog?.reflection || 'No reflection written.',
-                    last7DaysScores: (history || []).map((h: any) => h.score),
-                    currentStreak: streak?.current_streak ?? 0,
-                };
-
-                const { generateReflection } = await import('@/lib/ai');
-                const aiText = await generateReflection(context);
-
-                await supabase.from('daily_logs')
-                    .update({ ai_reflection: aiText })
-                    .eq('user_id', user.id)
-                    .eq('log_date', today);
+                await fetch(`${baseUrl}/api/reflection/ai-generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cookie': request.headers.get('Cookie') || ''
+                    },
+                });
             } catch (aiErr) {
-                console.error('AI reflection generation failed (non-blocking):', aiErr);
+                console.error('Background AI reflection generation failed:', aiErr);
             }
         })();
 
         const { checkAchievements } = await import('@/lib/achievements');
         const newAchievements = await checkAchievements(user.id, supabase);
         return NextResponse.json({ success: true, achievements: newAchievements });
+    }
+
+    if (type === 'freeze') {
+        const { data: userData } = await supabase
+            .from('users')
+            .select('freeze_tokens, last_freeze_date')
+            .eq('id', user.id)
+            .single();
+
+        if (!userData || userData.freeze_tokens <= 0) {
+            return NextResponse.json({ error: 'No freeze tokens available' }, { status: 400 });
+        }
+
+        if (userData.last_freeze_date === today) {
+            return NextResponse.json({ error: 'Already used a freeze token today' }, { status: 400 });
+        }
+
+        // Use token and update last freeze date
+        const { error: userUpdateError } = await supabase
+            .from('users')
+            .update({
+                freeze_tokens: userData.freeze_tokens - 1,
+                last_freeze_date: today
+            })
+            .eq('id', user.id);
+
+        if (userUpdateError) return NextResponse.json({ error: userUpdateError.message }, { status: 500 });
+
+        // Update daily log to mark as freeze/rest if needed, or just let the midnight cron handle it
+        // For now, we'll mark the log as a rest day since it's effectively the same for streak preservation
+        const { error: logError } = await supabase
+            .from('daily_logs')
+            .update({ is_rest_day: true, reflection: 'STREAK PROTECTED' })
+            .eq('user_id', user.id)
+            .eq('log_date', today);
+
+        if (logError) return NextResponse.json({ error: logError.message }, { status: 500 });
+
+        return NextResponse.json({ success: true, tokensRemaining: userData.freeze_tokens - 1 });
     }
 
     return NextResponse.json({ success: true });

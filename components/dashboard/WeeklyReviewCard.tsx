@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import type { WeeklyReview } from '@/types';
 import { format } from 'date-fns';
 
@@ -10,9 +9,7 @@ interface WeeklyReviewCardProps {
 
 export default function WeeklyReviewCard({ review }: WeeklyReviewCardProps) {
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+        <div
             style={{
                 backgroundColor: 'var(--color-bg-secondary)',
                 border: '1px solid rgba(200, 184, 154, 0.2)',
@@ -136,6 +133,6 @@ export default function WeeklyReviewCard({ review }: WeeklyReviewCardProps) {
                     "{review.ai_directive}"
                 </p>
             </div>
-        </motion.div>
+        </div>
     );
 }

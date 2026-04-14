@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import type { User } from '@/types';
 
 const TIERS: {
@@ -96,8 +95,7 @@ export default function StepDifficulty({ difficultyTier, onChange }: StepDifficu
                             </div>
 
                             {isSelected && (
-                                <motion.div
-                                    layoutId="difficulty-indicator"
+                                <div
                                     style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '3px', backgroundColor: 'var(--color-gold)' }}
                                 />
                             )}

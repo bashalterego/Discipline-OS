@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import type { PerformanceTier } from '@/types';
 
 interface PerformanceRingProps {
@@ -39,15 +38,12 @@ export default function PerformanceRing({ score, tier }: PerformanceRingProps) {
                     cy={radius}
                 />
                 {/* Progress Ring */}
-                <motion.circle
+                <circle
                     stroke={getColor()}
                     fill="transparent"
                     strokeWidth={stroke}
                     strokeDasharray={circumference + ' ' + circumference}
-                    style={{ strokeDashoffset }}
-                    initial={{ strokeDashoffset: circumference }}
-                    animate={{ strokeDashoffset }}
-                    transition={{ duration: 1, ease: 'easeOut' }}
+                    style={{ strokeDashoffset, transition: 'stroke-dashoffset 1s ease-out' }}
                     strokeLinecap="round"
                     r={normalizedRadius}
                     cx={radius}
@@ -67,10 +63,7 @@ export default function PerformanceRing({ score, tier }: PerformanceRingProps) {
                     justifyContent: 'center',
                 }}
             >
-                <motion.span
-                    key={score}
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
+                <span
                     style={{
                         fontFamily: 'var(--font-syne)',
                         fontSize: '36px',
@@ -80,7 +73,7 @@ export default function PerformanceRing({ score, tier }: PerformanceRingProps) {
                     }}
                 >
                     {score.toFixed(1)}
-                </motion.span>
+                </span>
                 <span
                     style={{
                         fontFamily: 'var(--font-dm-mono)',

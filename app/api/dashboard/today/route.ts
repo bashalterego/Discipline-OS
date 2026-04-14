@@ -83,6 +83,14 @@ export async function GET() {
         .eq('user_id', authUser.id)
         .single();
 
+    // 7. Check if this is the first day (only one log exists)
+    const { count } = await supabase
+        .from('daily_logs')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', authUser.id);
+
+    const isFirstDay = count === 1;
+
     return NextResponse.json({
         user,
         tasks,
@@ -90,5 +98,6 @@ export async function GET() {
         completions: completions || [],
         financeLog: financeLog || null,
         streak: streak || null,
+        isFirstDay
     });
 }

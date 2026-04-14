@@ -36,6 +36,8 @@ export const viewport = {
   userScalable: false,
 };
 
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
+
 export default function RootLayout({
   children,
 }: {
@@ -43,7 +45,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${syne.variable} ${dmMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
+      </body>
     </html>
   );
 }

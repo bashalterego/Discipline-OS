@@ -13,6 +13,8 @@ export interface User {
     onboarding_done: boolean;
     dashboard_tour_done: boolean;
     created_at: string;
+    freeze_tokens: number;
+    last_freeze_date: string | null;
 }
 
 export interface Achievement {

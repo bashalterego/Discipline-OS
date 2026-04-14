@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import type { User, TaskType } from '@/types';
-import { motion, Reorder, AnimatePresence } from 'framer-motion';
 
 interface CustomTask {
     id: string; // temp id for reordering
@@ -116,62 +115,60 @@ export default function StepTaskBuilder({ archetype, tasks, onChange }: StepTask
                     YOUR SYSTEM <span>{tasks.reduce((sum, t) => sum + t.points, 0).toFixed(1)} PTS TOTAL</span>
                 </h3>
 
-                <Reorder.Group axis="y" values={tasks} onReorder={onChange} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <AnimatePresence>
-                        {tasks.map((task, idx) => (
-                            <Reorder.Item key={task.id} value={task}>
-                                <div style={{
-                                    padding: '12px 16px',
-                                    backgroundColor: editingIdx === idx ? 'rgba(200, 184, 154, 0.05)' : 'rgba(255,255,255,0.02)',
-                                    border: '0.5px solid var(--color-border)',
-                                    borderRadius: '8px',
-                                    display: 'flex',
-                                    gap: '12px',
-                                    alignItems: 'center'
-                                }}>
-                                    <div style={{ cursor: 'grab', color: 'var(--color-text-muted)' }}>⋮⋮</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {tasks.map((task, idx) => (
+                        <div key={task.id}>
+                            <div style={{
+                                padding: '12px 16px',
+                                backgroundColor: editingIdx === idx ? 'rgba(200, 184, 154, 0.05)' : 'rgba(255,255,255,0.02)',
+                                border: '0.5px solid var(--color-border)',
+                                borderRadius: '8px',
+                                display: 'flex',
+                                gap: '12px',
+                                alignItems: 'center'
+                            }}>
+                                <div style={{ color: 'var(--color-text-muted)' }}>⋮⋮</div>
 
-                                    <div style={{ flex: 1 }}>
-                                        {editingIdx === idx ? (
-                                            <input
-                                                autoFocus
-                                                value={task.name}
-                                                onChange={(e) => updateTask(task.id, { name: e.target.value })}
-                                                onBlur={() => setEditingIdx(null)}
-                                                onKeyDown={(e) => e.key === 'Enter' && setEditingIdx(null)}
-                                                style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '1px solid var(--color-gold)', color: 'var(--color-text-primary)', outline: 'none', fontFamily: 'var(--font-dm-mono)' }}
-                                            />
-                                        ) : (
-                                            <div onClick={() => setEditingIdx(idx)} style={{ fontSize: '14px', fontWeight: 600 }}>{task.name}</div>
-                                        )}
-                                        <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-                                            <select
-                                                value={task.preferred_time}
-                                                onChange={(e) => updateTask(task.id, { preferred_time: e.target.value as any })}
-                                                style={{ background: 'transparent', border: 'none', color: 'var(--color-gold)', fontSize: '10px' }}
-                                            >
-                                                <option value="morning">Morning</option>
-                                                <option value="afternoon">Afternoon</option>
-                                                <option value="evening">Evening</option>
-                                            </select>
-                                            <span style={{ color: 'var(--color-border)' }}>|</span>
-                                            <input
-                                                type="number"
-                                                step="0.5"
-                                                value={task.points}
-                                                onChange={(e) => updateTask(task.id, { points: parseFloat(e.target.value) })}
-                                                style={{ width: '30px', background: 'transparent', border: 'none', color: 'var(--color-sage)', fontSize: '10px' }}
-                                            />
-                                            <span style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>pts</span>
-                                        </div>
+                                <div style={{ flex: 1 }}>
+                                    {editingIdx === idx ? (
+                                        <input
+                                            autoFocus
+                                            value={task.name}
+                                            onChange={(e) => updateTask(task.id, { name: e.target.value })}
+                                            onBlur={() => setEditingIdx(null)}
+                                            onKeyDown={(e) => e.key === 'Enter' && setEditingIdx(null)}
+                                            style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '1px solid var(--color-gold)', color: 'var(--color-text-primary)', outline: 'none', fontFamily: 'var(--font-dm-mono)' }}
+                                        />
+                                    ) : (
+                                        <div onClick={() => setEditingIdx(idx)} style={{ fontSize: '14px', fontWeight: 600, cursor: 'text' }}>{task.name}</div>
+                                    )}
+                                    <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                                        <select
+                                            value={task.preferred_time}
+                                            onChange={(e) => updateTask(task.id, { preferred_time: e.target.value as any })}
+                                            style={{ background: 'transparent', border: 'none', color: 'var(--color-gold)', fontSize: '10px' }}
+                                        >
+                                            <option value="morning">Morning</option>
+                                            <option value="afternoon">Afternoon</option>
+                                            <option value="evening">Evening</option>
+                                        </select>
+                                        <span style={{ color: 'var(--color-border)' }}>|</span>
+                                        <input
+                                            type="number"
+                                            step="0.5"
+                                            value={task.points}
+                                            onChange={(e) => updateTask(task.id, { points: parseFloat(e.target.value) })}
+                                            style={{ width: '30px', background: 'transparent', border: 'none', color: 'var(--color-sage)', fontSize: '10px' }}
+                                        />
+                                        <span style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>pts</span>
                                     </div>
-
-                                    <button onClick={() => removeTask(task.id)} style={{ color: 'var(--color-red)', padding: '4px' }}>×</button>
                                 </div>
-                            </Reorder.Item>
-                        ))}
-                    </AnimatePresence>
-                </Reorder.Group>
+
+                                <button onClick={() => removeTask(task.id)} style={{ color: 'var(--color-red)', padding: '4px' }}>×</button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
 
                 {tasks.length === 0 && (
                     <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-muted)', fontSize: '12px', border: '1px dashed var(--color-border)', borderRadius: '12px' }}>

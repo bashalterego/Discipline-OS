@@ -29,6 +29,12 @@ export default function SettingsPage() {
   const [strictMode, setStrictMode] = useState(false);
   const [recoveryMode, setRecoveryMode] = useState(false);
 
+  // Delete account state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const [deleteError, setDeleteError] = useState('');
+
   useEffect(() => {
     fetch('/api/dashboard/today')
       .then(r => r.json())
@@ -71,6 +77,36 @@ export default function SettingsPage() {
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push('/login');
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmation !== 'DELETE') return;
+
+    setDeleting(true);
+    setDeleteError('');
+
+    try {
+      const res = await fetch('/api/user/delete-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirmation: 'DELETE' }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to delete account');
+      }
+
+      // Success: Sign out and redirect
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push('/');
+    } catch (err: any) {
+      setDeleteError(err.message);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) {
@@ -186,9 +222,11 @@ export default function SettingsPage() {
       </Card>
 
       {/* Danger Zone */}
-      <Card style={{ padding: '24px', borderColor: 'rgba(255,80,80,0.2)' }}>
+      <Card style={{ padding: '24px', borderColor: 'rgba(255,80,80,0.2)', marginBottom: '40px' }}>
         <h3 style={{ ...sectionTitle, color: 'var(--color-red)', marginBottom: '16px' }}>DANGER ZONE</h3>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
+        {/* Sign Out */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <div>
             <p style={{ fontFamily: 'var(--font-syne)', fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '4px' }}>
               Sign Out
@@ -201,7 +239,89 @@ export default function SettingsPage() {
             SIGN OUT
           </Button>
         </div>
+
+        <div style={{ height: '0.5px', backgroundColor: 'rgba(255,80,80,0.1)', marginBottom: '24px' }} />
+
+        {/* Delete Account */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <p style={{ fontFamily: 'var(--font-syne)', fontSize: '13px', fontWeight: 600, color: 'var(--color-red)', marginBottom: '4px' }}>
+              Delete Account
+            </p>
+            <p style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '11px', color: 'var(--color-text-muted)' }}>
+              Permanently remove all your data. This cannot be undone.
+            </p>
+          </div>
+          <Button variant="danger" size="sm" onClick={() => setShowDeleteModal(true)}>
+            DELETE ACCOUNT
+          </Button>
+        </div>
       </Card>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000, padding: '24px'
+        }}>
+          <Card style={{ width: '100%', maxWidth: '400px', padding: '32px', borderColor: 'var(--color-red)' }}>
+            <h2 style={{ fontFamily: 'var(--font-syne)', fontSize: '18px', fontWeight: 800, color: 'var(--color-red)', marginBottom: '12px' }}>
+              ARE YOU ABSOLUTELY SURE?
+            </h2>
+            <p style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: 1.6, marginBottom: '24px' }}>
+              This action is irreversible. All your tasks, streaks, finance logs, and data will be permanently deleted.
+            </p>
+
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono)', fontSize: '10px', color: 'var(--color-text-muted)', marginBottom: '8px' }}>
+                TYPE <span style={{ color: 'var(--color-red)', fontWeight: 700 }}>DELETE</span> TO CONFIRM
+              </label>
+              <input
+                type="text"
+                value={deleteConfirmation}
+                onChange={e => setDeleteConfirmation(e.target.value)}
+                placeholder="DELETE"
+                style={{
+                  width: '100%', padding: '12px', backgroundColor: 'rgba(255,255,255,0.03)',
+                  border: '1.5px solid var(--color-red)', borderRadius: '6px',
+                  color: 'var(--color-text-primary)', fontFamily: 'var(--font-dm-mono)',
+                  fontSize: '13px', outline: 'none'
+                }}
+              />
+            </div>
+
+            {deleteError && (
+              <div style={{ marginBottom: '16px', padding: '10px', backgroundColor: 'rgba(255,80,80,0.1)', border: '0.5px solid var(--color-red)', borderRadius: '4px', fontSize: '11px', color: 'var(--color-red)', fontFamily: 'var(--font-dm-mono)' }}>
+                {deleteError}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <Button
+                variant="ghost"
+                style={{ flex: 1 }}
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDeleteConfirmation('');
+                  setDeleteError('');
+                }}
+              >
+                CANCEL
+              </Button>
+              <Button
+                variant="danger"
+                style={{ flex: 1.5 }}
+                disabled={deleteConfirmation !== 'DELETE' || deleting}
+                onClick={handleDeleteAccount}
+              >
+                {deleting ? 'DELETING...' : 'CONFIRM DELETE'}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

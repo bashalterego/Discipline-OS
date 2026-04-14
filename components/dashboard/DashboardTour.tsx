@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const TOUR_STEPS = [
     {
@@ -71,10 +70,7 @@ export default function DashboardTour({ onFinish }: { onFinish: () => void }) {
             }} />
 
             {/* Tooltip */}
-            <motion.div
-                key={step}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+            <div
                 style={{
                     position: 'absolute',
                     top: coords.top + coords.height + 20,
@@ -134,7 +130,7 @@ export default function DashboardTour({ onFinish }: { onFinish: () => void }) {
                         {step === TOUR_STEPS.length - 1 ? 'LETS GO' : 'NEXT'}
                     </button>
                 </div>
-            </motion.div>
+            </div>
         </div>
     );
 }

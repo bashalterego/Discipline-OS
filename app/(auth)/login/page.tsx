@@ -115,37 +115,48 @@ export default function LoginPage() {
                             />
                         </div>
 
-                        <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                             <label
                                 htmlFor="password"
                                 className="label-text"
-                                style={{ display: 'block', marginBottom: '8px' }}
+                                style={{ display: 'block' }}
                             >
                                 PASSWORD
                             </label>
-                            <input
-                                id="password"
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                placeholder="••••••••"
+                            <Link
+                                href="/auth/reset-password"
                                 style={{
-                                    width: '100%',
-                                    padding: '10px 14px',
-                                    backgroundColor: 'rgba(255,255,255,0.03)',
-                                    border: '0.5px solid var(--color-border)',
-                                    borderRadius: '6px',
-                                    color: 'var(--color-text-primary)',
                                     fontFamily: 'var(--font-dm-mono)',
-                                    fontSize: '13px',
-                                    outline: 'none',
-                                    transition: 'border-color 0.15s',
+                                    fontSize: '10px',
+                                    color: 'var(--color-gold)',
+                                    textDecoration: 'none'
                                 }}
-                                onFocus={(e) => (e.target.style.borderColor = 'var(--color-gold)')}
-                                onBlur={(e) => (e.target.style.borderColor = 'var(--color-border)')}
-                            />
+                            >
+                                Forgot password?
+                            </Link>
                         </div>
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            placeholder="••••••••"
+                            style={{
+                                width: '100%',
+                                padding: '10px 14px',
+                                backgroundColor: 'rgba(255,255,255,0.03)',
+                                border: '0.5px solid var(--color-border)',
+                                borderRadius: '6px',
+                                color: 'var(--color-text-primary)',
+                                fontFamily: 'var(--font-dm-mono)',
+                                fontSize: '13px',
+                                outline: 'none',
+                                transition: 'border-color 0.15s',
+                            }}
+                            onFocus={(e) => (e.target.style.borderColor = 'var(--color-gold)')}
+                            onBlur={(e) => (e.target.style.borderColor = 'var(--color-border)')}
+                        />
 
                         {error && (
                             <div

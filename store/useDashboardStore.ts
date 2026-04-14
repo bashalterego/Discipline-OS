@@ -16,6 +16,8 @@ interface DashboardState {
     achievements: Achievement[];
     newAchievement: Achievement | null;
     isEditing: boolean;
+    lastFetched: number | null;
+    isFirstDay: boolean;
 
     // Actions
     setInitialData: (data: {
@@ -25,7 +27,9 @@ interface DashboardState {
         dailyLog: DailyLog;
         financeLog: any;
         achievements: Achievement[];
+        isFirstDay: boolean;
     }) => void;
+    fetchDashboardData: (force?: boolean) => Promise<void>;
     toggleTask: (taskId: string, completed: boolean) => void;
     updateTaskValue: (taskId: string, value: number) => void;
     toggleRestDay: () => Promise<void>;
@@ -53,6 +57,8 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     achievements: [],
     newAchievement: null,
     isEditing: false,
+    lastFetched: null,
+    isFirstDay: false,
 
     setInitialData: (data) => {
         // Self-healing: Deduplicate tasks by name (case-insensitive)
@@ -101,7 +107,32 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
             score,
             tier,
             loading: false,
+            lastFetched: Date.now(),
+            isFirstDay: data.isFirstDay
         });
+    },
+
+    fetchDashboardData: async (force = false) => {
+        const { lastFetched, setLoading, setInitialData, setError } = get();
+        const now = Date.now();
+        const FIVE_MINUTES = 5 * 60 * 1000;
+
+        if (!force && lastFetched && (now - lastFetched < FIVE_MINUTES)) {
+            console.log('Dashboard data served from cache');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const res = await fetch('/api/dashboard/today');
+            if (!res.ok) throw new Error('Failed to load dashboard');
+            const data = await res.json();
+            setInitialData(data);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     },
 
     toggleTask: (taskId, completed) => {

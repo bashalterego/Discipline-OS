@@ -82,56 +82,67 @@ export default function Hero() {
                     lineHeight: 1.7,
                     marginBottom: '40px'
                 }}>
-                    A personal operating system for people who refuse to be average.
+                    The Operating System for Human Excellence.
                     Real behavioral data meets AI-driven evolution.
                 </p>
-                <div style={{ display: 'flex', gap: '16px' }}>
-                    <Link
-                        href="/onboarding"
-                        style={{
-                            fontFamily: 'var(--font-syne)',
-                            fontWeight: 700,
-                            fontSize: '13px',
-                            letterSpacing: '0.06em',
-                            color: '#0E0E10',
-                            background: 'linear-gradient(135deg, #C8B89A, #E8A84C)',
-                            borderRadius: '6px',
-                            padding: '16px 40px',
-                            textDecoration: 'none',
-                            transition: 'all 0.2s ease',
-                            boxShadow: '0 4px 24px rgba(200, 184, 154, 0.25)'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.filter = 'brightness(1.1)';
-                            e.currentTarget.style.transform = 'translateY(-1px)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.filter = 'none';
-                            e.currentTarget.style.transform = 'none';
-                        }}
-                    >
-                        START YOUR SYSTEM
-                    </Link>
-                    <Link
-                        href="#how-it-works"
-                        style={{
-                            fontFamily: 'var(--font-syne)',
-                            fontWeight: 600,
-                            fontSize: '13px',
-                            letterSpacing: '0.06em',
-                            color: 'var(--color-gold)',
-                            background: 'transparent',
-                            border: '1px solid var(--color-gold)',
-                            borderRadius: '6px',
-                            padding: '16px 40px',
-                            textDecoration: 'none',
-                            transition: 'all 0.2s ease'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(200, 184, 154, 0.08)'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                    >
-                        SEE HOW IT WORKS
-                    </Link>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', gap: '16px' }}>
+                        <Link
+                            href="/onboarding"
+                            style={{
+                                fontFamily: 'var(--font-syne)',
+                                fontWeight: 700,
+                                fontSize: '13px',
+                                letterSpacing: '0.06em',
+                                color: '#0E0E10',
+                                background: 'linear-gradient(135deg, #C8B89A, #E8A84C)',
+                                borderRadius: '6px',
+                                padding: '16px 40px',
+                                textDecoration: 'none',
+                                transition: 'all 0.2s ease',
+                                boxShadow: '0 4px 24px rgba(200, 184, 154, 0.25)'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.filter = 'brightness(1.1)';
+                                e.currentTarget.style.transform = 'translateY(-1px)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.filter = 'none';
+                                e.currentTarget.style.transform = 'none';
+                            }}
+                        >
+                            START YOUR SYSTEM
+                        </Link>
+                        <Link
+                            href="#how-it-works"
+                            style={{
+                                fontFamily: 'var(--font-syne)',
+                                fontWeight: 600,
+                                fontSize: '13px',
+                                letterSpacing: '0.06em',
+                                color: 'var(--color-gold)',
+                                background: 'transparent',
+                                border: '1px solid var(--color-gold)',
+                                borderRadius: '6px',
+                                padding: '16px 40px',
+                                textDecoration: 'none',
+                                transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(200, 184, 154, 0.08)'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        >
+                            SEE HOW IT WORKS
+                        </Link>
+                    </div>
+                    <div style={{
+                        fontFamily: 'var(--font-dm-mono)',
+                        fontSize: '11px',
+                        color: 'var(--color-text-muted)',
+                        paddingLeft: '4px',
+                        opacity: 0.7
+                    }}>
+                        No credit card required. Pure accountability.
+                    </div>
                 </div>
             </div>
 
