@@ -1,0 +1,24 @@
+{
+    "crons": [
+        {
+            "path": "/api/cron/day2-nudge",
+            "schedule": "30 2 * * *"
+        },
+        {
+            "path": "/api/cron/weekly-summary",
+            "schedule": "30 2 * * 1"
+        },
+        {
+            "path": "/api/cron/reminder-evening",
+            "schedule": "30 15 * * *"
+        },
+        {
+            "path": "/api/cron/reminder-urgent",
+            "schedule": "0 17 * * *"
+        },
+        {
+            "path": "/api/cron/close-logs",
+            "schedule": "30 18 * * *"
+        }
+    ]
+}

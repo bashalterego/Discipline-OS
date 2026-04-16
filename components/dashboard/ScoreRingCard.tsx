@@ -26,7 +26,7 @@ export default memo(function ScoreRingCard({
     onFreeze
 }: ScoreRingCardProps) {
     return (
-        <Card style={{ padding: '32px', textAlign: 'center', position: 'relative' }}>
+        <Card style={{ padding: '32px', textAlign: 'center', position: 'relative', width: '100%', minHeight: '380px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             {isRestDay ? (
                 <div style={{
                     position: 'absolute',

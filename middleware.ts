@@ -15,9 +15,11 @@ export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Allow public paths
-    const isPublic = PUBLIC_PATHS.some(
-        (p) => pathname === p || pathname.startsWith('/api/auth/')
-    );
+    const isPublic =
+        PUBLIC_PATHS.some((p) => pathname === p) ||
+        pathname.startsWith('/api/auth/') ||
+        pathname.startsWith('/api/cron/') ||
+        pathname.startsWith('/api/notifications/');
 
     const { supabaseResponse, user } = await updateSession(request);
 

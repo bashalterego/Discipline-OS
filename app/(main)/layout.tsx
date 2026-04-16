@@ -42,10 +42,10 @@ export default async function MainLayout({
                 userName={profile?.full_name ?? ''}
             />
             <main
+                className="p-3 md:p-7"
                 style={{
                     flex: 1,
                     overflowY: 'auto',
-                    padding: '28px',
                     paddingBottom: '80px', // mobile nav clearance
                 }}
             >

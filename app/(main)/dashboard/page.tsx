@@ -92,11 +92,7 @@ export default function DashboardPage() {
                 </div>
             )}
 
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1.5fr',
-                gap: '24px'
-            }} className="dashboard-grid">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-6">
 
                 {/* Left Column: Performance & Stats */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -180,34 +176,26 @@ export default function DashboardPage() {
 
                     <DailyReflection initialText={dailyLog?.reflection || null} />
                 </div>
-
-                <style jsx>{`
-                    @media (max-width: 900px) {
-                        .dashboard-grid {
-                            grid-template-columns: 1fr !important;
-                        }
-                    }
-                `}</style>
-                {user?.onboarding_done && !user?.dashboard_tour_done && <DashboardTour onFinish={finishTour} />}
-
-                {/* Achievement Notifications */}
-                {newAchievement && (
-                    ['streak_7', 'streak_14', 'streak_21', 'streak_30', 'streak_60', 'streak_90'].includes(newAchievement.type) ? (
-                        <CelebrationOverlay achievement={newAchievement} onDismiss={dismissAchievement} />
-                    ) : (
-                        <ToastAchievement achievement={newAchievement} onDismiss={dismissAchievement} />
-                    )
-                )}
-
-                <ScoreShareModal
-                    isOpen={showShare}
-                    onClose={() => setShowShare(false)}
-                    score={score}
-                    tier={tier}
-                    userName={user?.full_name || 'Warrior'}
-                    archetype={user?.archetype}
-                />
             </div>
+            {user?.onboarding_done && !user?.dashboard_tour_done && <DashboardTour onFinish={finishTour} />}
+
+            {/* Achievement Notifications */}
+            {newAchievement && (
+                ['streak_7', 'streak_14', 'streak_21', 'streak_30', 'streak_60', 'streak_90'].includes(newAchievement.type) ? (
+                    <CelebrationOverlay achievement={newAchievement} onDismiss={dismissAchievement} />
+                ) : (
+                    <ToastAchievement achievement={newAchievement} onDismiss={dismissAchievement} />
+                )
+            )}
+
+            <ScoreShareModal
+                isOpen={showShare}
+                onClose={() => setShowShare(false)}
+                score={score}
+                tier={tier}
+                userName={user?.full_name || 'Warrior'}
+                archetype={user?.archetype}
+            />
         </div>
     );
 }

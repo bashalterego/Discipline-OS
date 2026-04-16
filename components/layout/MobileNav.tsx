@@ -23,13 +23,14 @@ export default function MobileNav() {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                height: '60px',
+                height: 'calc(64px + env(safe-area-inset-bottom))',
                 backgroundColor: 'var(--color-sidebar)',
                 borderTop: '0.5px solid var(--color-border)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-around',
                 padding: '0 8px',
+                paddingBottom: 'env(safe-area-inset-bottom)',
                 zIndex: 50,
             }}
         >
@@ -43,14 +44,19 @@ export default function MobileNav() {
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            gap: '3px',
+                            gap: '4px',
                             textDecoration: 'none',
-                            opacity: isActive ? 1 : 0.4,
-                            transition: 'opacity 0.15s ease',
-                            minWidth: '48px',
+                            opacity: isActive ? 1 : 0.45,
+                            transition: 'all 0.2s ease',
+                            minWidth: '56px',
                         }}
                     >
-                        <span style={{ fontSize: '18px' }}>{item.icon}</span>
+                        <span style={{
+                            fontSize: '20px',
+                            color: isActive ? 'var(--color-gold)' : 'var(--color-text-secondary)',
+                            transform: isActive ? 'scale(1.1)' : 'scale(1)',
+                            transition: 'transform 0.2s ease'
+                        }}>{item.icon}</span>
                         <span
                             style={{
                                 fontFamily: 'var(--font-dm-mono)',
@@ -59,6 +65,7 @@ export default function MobileNav() {
                                     ? 'var(--color-gold)'
                                     : 'var(--color-text-muted)',
                                 letterSpacing: '0.05em',
+                                fontWeight: isActive ? 600 : 400,
                             }}
                         >
                             {item.label}
